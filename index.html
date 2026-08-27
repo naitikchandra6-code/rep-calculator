@@ -1,0 +1,52 @@
+(from === to) {
+        showResult(reps, reps, reps);
+        return;
+      }
+
+      /*
+        Basic estimation formula.
+      */
+
+      const estimated =
+        reps * (difficulty[from] / difficulty[to]);
+
+      /*
+        We don't want the calculator to pretend
+        the answer is exact, so we create a range.
+      */
+
+      let lower = Math.max(1, Math.round(estimated * 0.75));
+      let upper = Math.max(lower + 1, Math.round(estimated * 1.25));
+
+      /*
+        Limit extremely large beginner estimates.
+      */
+
+      upper = Math.min(upper, 150);
+
+      const middle = Math.round((lower + upper) / 2);
+
+      showResult(middle, lower, upper);
+    }
+
+    function showResult(middle, lower, upper) {
+
+      document.getElementById("answer").textContent =
+        middle + " reps";
+
+      document.getElementById("range").textContent =
+        "Estimated range: " + lower + "–" + upper + " reps";
+
+      document.getElementById("result").style.display = "block";
+    }
+
+  </script>
+
+</body>
+</html>
+Perfect! 🎉 You're at exactly the right screen.
+You have entered index.html, and the large box underneath is where we're going to put our website.
+Step 4 — Paste the first version of the website
+Tap inside the large black area where it says “Enter file contents here”.
+Then paste all of the code below into it:
+HTML
