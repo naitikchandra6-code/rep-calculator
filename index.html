@@ -1,171 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rep Calculator</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 500px;
-      margin: auto;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    .card {
-      background: #222;
-      padding: 20px;
-      border-radius: 15px;
-      margin-top: 20px;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 8px;
-    }
-
-    select,
-    input,
-    button {
-      width: 100%;
-      padding: 12px;
-      box-sizing: border-box;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-    }
-
-    button {
-      margin-top: 20px;
-      background: #fff;
-      color: #111;
-      font-weight: bold;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    #result {
-      display: none;
-      margin-top: 20px;
-      padding: 15px;
-      background: #333;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    #answer {
-      font-size: 28px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="container">
-
-    <h1>💪 Rep Calculator</h1>
-
-    <div class="card">
-
-      <label for="from">Exercise you can do:</label>
-
-      <select id="from">
-        <option value="pullups">Pull-ups</option>
-        <option value="pushups">Push-ups</option>
-        <option value="squats">Squats</option>
-        <option value="dips">Dips</option>
-        <option value="lunges">Lunges</option>
-        <option value="situps">Sit-ups</option>
-      </select>
-
-      <label for="reps">Your maximum reps:</label>
-
-      <input
-        type="number"
-        id="reps"
-        min="1"
-        placeholder="Example: 10"
-      >
-
-      <label for="to">Exercise you want to estimate:</label>
-
-      <select id="to">
-        <option value="pullups">Pull-ups</option>
-        <option value="pushups">Push-ups</option>
-        <option value="squats">Squats</option>
-        <option value="dips">Dips</option>
-        <option value="lunges">Lunges</option>
-        <option value="situps">Sit-ups</option>
-      </select>
-
-      <button onclick="calculate()">Calculate</button>
-
-      <div id="result">
-        <div>Estimated reps</div>
-        <div id="answer"></div>
-        <div id="range"></div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <script>
-
-    const difficulty = {
-      pullups: 5,
-      dips: 4,
-      pushups: 3,
-      lunges: 2,
-      situps: 2,
-      squats: 1
-    };
-
-    function calculate() {
-
-      const from = document.getElementById("from").value;
-      const to = document.getElementById("to").value;
-      const reps = Number(document.getElementById("reps").value);
-
-      if (!reps || reps < 1) {
-        alert("Please enter your maximum reps.");
-        return;
-      }
-
-      if (from === to) {
+(from === to) {
         showResult(reps, reps, reps);
         return;
       }
 
+      /*
+        Basic estimation formula.
+      */
+
       const estimated =
         reps * (difficulty[from] / difficulty[to]);
 
-      let lower = Math.max(1, Math.round(estimated * 0.75));
+      /*
+        We don't want the calculator to pretend
+        the answer is exact, so we create a range.
+      */
 
-      let upper = Math.max(
-        lower + 1,
-        Math.round(estimated * 1.25)
-      );
+      let lower = Math.max(1, Math.round(estimated * 0.75));
+      let upper = Math.max(lower + 1, Math.round(estimated * 1.25));
+
+      /*
+        Limit extremely large beginner estimates.
+      */
 
       upper = Math.min(upper, 150);
 
-      const middle =
-        Math.round((lower + upper) / 2);
+      const middle = Math.round((lower + upper) / 2);
 
       showResult(middle, lower, upper);
     }
@@ -178,11 +37,11 @@
       document.getElementById("range").textContent =
         "Estimated range: " + lower + "–" + upper + " reps";
 
-      document.getElementById("result").style.display =
-        "block";
+      document.getElementById("result").style.display = "block";
     }
 
   </script>
 
 </body>
 </html>
+ 
