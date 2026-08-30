@@ -1,840 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rep Calculator</title>
 
-<title>Rep Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
 
-<style>
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
 
-* {
-  box-sizing: border-box;
-}
+    h1 {
+      text-align: center;
+    }
 
-body {
-  margin: 0;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background: #111;
-  color: white;
-}
+    .card {
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
 
-.container {
-  max-width: 600px;
-  margin: auto;
-}
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 8px;
+    }
 
-h1 {
-  text-align: center;
-  margin-bottom: 25px;
-}
+    select,
+    input,
+    button {
+      width: 100%;
+      padding: 12px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
 
-.card {
-  background: #222;
-  padding: 20px;
-  border-radius: 16px;
-}
+    button {
+      margin-top: 20px;
+      background: #fff;
+      color: #111;
+      font-weight: bold;
+    }
 
-label {
-  display: block;
-  margin-top: 15px;
-  margin-bottom: 7px;
-}
+    button:active {
+      transform: scale(0.98);
+    }
 
-select,
-input,
-button {
-  width: 100%;
-  padding: 13px;
-  border: none;
-  border-radius: 9px;
-  font-size: 16px;
-}
+    #result {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background: #333;
+      border-radius: 10px;
+      text-align: center;
+    }
 
-select,
-input {
-  background: #eee;
-  color: #111;
-}
-
-button {
-  margin-top: 20px;
-  background: white;
-  color: #111;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:active {
-  transform: scale(0.98);
-}
-
-.section-title {
-  margin-top: 5px;
-  margin-bottom: 10px;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.input-box {
-  margin-top: 5px;
-}
-
-.hidden {
-  display: none;
-}
-
-#result {
-  display: none;
-  margin-top: 20px;
-  padding: 20px;
-  background: #333;
-  border-radius: 12px;
-  text-align: center;
-}
-
-#answer {
-  font-size: 28px;
-  font-weight: bold;
-  margin: 8px 0;
-}
-
-#range {
-  font-size: 16px;
-}
-
-.note {
-  margin-top: 15px;
-  font-size: 13px;
-  color: #bbb;
-  text-align: center;
-}
-
-</style>
+    #answer {
+      font-size: 28px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
-<h1>💪 Rep Calculator</h1>
+    <h1>💪 Rep Calculator</h1>
 
-<div class="card">
+    <div class="card">
 
-<div class="section-title">
-Choose the exercise you are starting with
-</div>
+      <label for="from">Exercise you can do:</label>
 
-<label>Category</label>
+      <select id="from">
+        <option value="pullups">Pull-ups</option>
+        <option value="pushups">Push-ups</option>
+        <option value="squats">Squats</option>
+        <option value="dips">Dips</option>
+        <option value="lunges">Lunges</option>
+        <option value="situps">Sit-ups</option>
+      </select>
 
-<select id="fromCategory" onchange="updateFromExercises()">
-  <option value="basic">🏃 Basic Exercises</option>
-  <option value="calisthenics">🤸 Calisthenics</option>
-  <option value="gym">🏋️ Gym Machine</option>
-  <option value="isometric">🧱 Isometric</option>
-</select>
+      <label for="reps">Your maximum reps:</label>
 
-<label>Exercise</label>
+      <input
+        type="number"
+        id="reps"
+        min="1"
+        placeholder="Example: 10"
+      >
 
-<select id="fromExercise" onchange="updateFromInputs()"></select>
+      <label for="to">Exercise you want to estimate:</label>
 
+      <select id="to">
+        <option value="pullups">Pull-ups</option>
+        <option value="pushups">Push-ups</option>
+        <option value="squats">Squats</option>
+        <option value="dips">Dips</option>
+        <option value="lunges">Lunges</option>
+        <option value="situps">Sit-ups</option>
+      </select>
 
-<div id="fromRepBox" class="input-box">
+      <button onclick="calculate()">Calculate</button>
 
-<label>Maximum reps</label>
+      <div id="result">
+        <div>Estimated reps</div>
+        <div id="answer"></div>
+        <div id="range"></div>
+      </div>
 
-<input
-  type="number"
-  id="fromReps"
-  min="1"
-  placeholder="Example: 10">
+    </div>
 
-</div>
+  </div>
 
+  <script>
 
-<div id="fromWeightBox" class="input-box hidden">
+    const difficulty = {
+      pullups: 5,
+      dips: 4,
+      pushups: 3,
+      lunges: 2,
+      situps: 2,
+      squats: 1
+    };
 
-<label>Weight (kg)</label>
+    function calculate() {
 
-<input
-  type="number"
-  id="fromWeight"
-  min="0"
-  step="0.5"
-  placeholder="Example: 20">
+      const from = document.getElementById("from").value;
+      const to = document.getElementById("to").value;
+      const reps = Number(document.getElementById("reps").value);
 
-</div>
+      if (!reps || reps < 1) {
+        alert("Please enter your maximum reps.");
+        return;
+      }
 
+      if (from === to) {
+        showResult(reps, reps, reps);
+        return;
+      }
 
-<div id="fromTimeBox" class="input-box hidden">
+      const estimated =
+        reps * (difficulty[from] / difficulty[to]);
 
-<label>Hold time (seconds)</label>
+      let lower = Math.max(1, Math.round(estimated * 0.75));
 
-<input
-  type="number"
-  id="fromTime"
-  min="1"
-  placeholder="Example: 30">
+      let upper = Math.max(
+        lower + 1,
+        Math.round(estimated * 1.25)
+      );
 
-</div>
+      upper = Math.min(upper, 150);
 
+      const middle =
+        Math.round((lower + upper) / 2);
 
-<hr style="margin:25px 0; border:0; border-top:1px solid #444;">
-
-
-<div class="section-title">
-Choose what you want to estimate
-</div>
-
-<label>Category</label>
-
-<select id="toCategory" onchange="updateToExercises()">
-  <option value="basic">🏃 Basic Exercises</option>
-  <option value="calisthenics">🤸 Calisthenics</option>
-  <option value="gym">🏋️ Gym Machine</option>
-  <option value="isometric">🧱 Isometric</option>
-</select>
-
-<label>Exercise</label>
-
-<select id="toExercise"></select>
-
-
-<button onclick="calculate()">
-Calculate
-</button>
-
-
-<div id="result">
-
-<div>Estimated performance</div>
-
-<div id="answer"></div>
-
-<div id="range"></div>
-
-</div>
-
-
-<div class="note">
-These results are rough estimates, not exact strength conversions.
-</div>
-
-</div>
-
-</div>
-
-
-<script>
-
-
-/* =====================================================
-   EXERCISE DATABASE
-===================================================== */
-
-
-const exercises = {
-
-  basic: {
-
-    pullups: {
-      name: "Pull-ups",
-      difficulty: 5,
-      type: "reps"
-    },
-
-    pushups: {
-      name: "Push-ups",
-      difficulty: 3,
-      type: "reps"
-    },
-
-    squats: {
-      name: "Bodyweight Squats",
-      difficulty: 1,
-      type: "reps"
-    },
-
-    dips: {
-      name: "Dips",
-      difficulty: 4,
-      type: "reps"
-    },
-
-    lunges: {
-      name: "Lunges",
-      difficulty: 2,
-      type: "reps"
-    },
-
-    situps: {
-      name: "Sit-ups",
-      difficulty: 2,
-      type: "reps"
+      showResult(middle, lower, upper);
     }
 
-  },
+    function showResult(middle, lower, upper) {
 
+      document.getElementById("answer").textContent =
+        middle + " reps";
 
-  calisthenics: {
+      document.getElementById("range").textContent =
+        "Estimated range: " + lower + "–" + upper + " reps";
 
-    chinups: {
-      name: "Chin-ups",
-      difficulty: 4.5,
-      type: "reps"
-    },
-
-    diamondPushups: {
-      name: "Diamond Push-ups",
-      difficulty: 3.5,
-      type: "reps"
-    },
-
-    pikePushups: {
-      name: "Pike Push-ups",
-      difficulty: 4,
-      type: "reps"
-    },
-
-    handstandPushups: {
-      name: "Handstand Push-ups",
-      difficulty: 7,
-      type: "reps"
-    },
-
-    muscleups: {
-      name: "Muscle-ups",
-      difficulty: 8,
-      type: "reps"
-    },
-
-    pistolSquats: {
-      name: "Pistol Squats",
-      difficulty: 5,
-      type: "reps"
+      document.getElementById("result").style.display =
+        "block";
     }
 
-  },
-
-
-  gym: {
-
-    chestPress: {
-      name: "Chest Press Machine",
-      difficulty: 5,
-      type: "weightReps"
-    },
-
-    latPulldown: {
-      name: "Lat Pulldown",
-      difficulty: 5,
-      type: "weightReps"
-    },
-
-    legPress: {
-      name: "Leg Press",
-      difficulty: 3,
-      type: "weightReps"
-    },
-
-    legExtension: {
-      name: "Leg Extension",
-      difficulty: 2.5,
-      type: "weightReps"
-    },
-
-    legCurl: {
-      name: "Leg Curl",
-      difficulty: 2.5,
-      type: "weightReps"
-    },
-
-    shoulderPress: {
-      name: "Shoulder Press Machine",
-      difficulty: 6,
-      type: "weightReps"
-    },
-
-    cableRow: {
-      name: "Seated Cable Row",
-      difficulty: 5,
-      type: "weightReps"
-    }
-
-  },
-
-
-  isometric: {
-
-    plank: {
-      name: "Plank",
-      difficulty: 3,
-      type: "time"
-    },
-
-    wallSit: {
-      name: "Wall Sit",
-      difficulty: 2,
-      type: "time"
-    },
-
-    deadHang: {
-      name: "Dead Hang",
-      difficulty: 5,
-      type: "time"
-    },
-
-    hollowHold: {
-      name: "Hollow Body Hold",
-      difficulty: 5,
-      type: "time"
-    },
-
-    sidePlank: {
-      name: "Side Plank",
-      difficulty: 4,
-      type: "time"
-    }
-
-  }
-
-};
-
-
-/* =====================================================
-   UPDATE EXERCISE LIST
-===================================================== */
-
-
-function updateExerciseList(category, selectId) {
-
-  const select = document.getElementById(selectId);
-
-  select.innerHTML = "";
-
-  const list = exercises[category];
-
-  for (const key in list) {
-
-    const option = document.createElement("option");
-
-    option.value = key;
-
-    option.textContent = list[key].name;
-
-    select.appendChild(option);
-
-  }
-
-}
-
-
-/* =====================================================
-   FROM EXERCISE
-===================================================== */
-
-
-function updateFromExercises() {
-
-  const category =
-    document.getElementById("fromCategory").value;
-
-  updateExerciseList(
-    category,
-    "fromExercise"
-  );
-
-  updateFromInputs();
-}
-
-
-/* =====================================================
-   TO EXERCISE
-===================================================== */
-
-
-function updateToExercises() {
-
-  const category =
-    document.getElementById("toCategory").value;
-
-  updateExerciseList(
-    category,
-    "toExercise"
-  );
-
-}
-
-
-/* =====================================================
-   SHOW CORRECT INPUTS
-===================================================== */
-
-
-function updateFromInputs() {
-
-  const category =
-    document.getElementById("fromCategory").value;
-
-  const exercise =
-    document.getElementById("fromExercise").value;
-
-  const data =
-    exercises[category][exercise];
-
-
-  const reps =
-    document.getElementById("fromRepBox");
-
-  const weight =
-    document.getElementById("fromWeightBox");
-
-  const time =
-    document.getElementById("fromTimeBox");
-
-
-  reps.classList.add("hidden");
-
-  weight.classList.add("hidden");
-
-  time.classList.add("hidden");
-
-
-  if (data.type === "reps") {
-
-    reps.classList.remove("hidden");
-
-  }
-
-
-  if (data.type === "weightReps") {
-
-    reps.classList.remove("hidden");
-
-    weight.classList.remove("hidden");
-
-  }
-
-
-  if (data.type === "time") {
-
-    time.classList.remove("hidden");
-
-  }
-
-}
-
-
-/* =====================================================
-   CALCULATE
-===================================================== */
-
-
-function calculate() {
-
-  const fromCategory =
-    document.getElementById("fromCategory").value;
-
-  const fromExercise =
-    document.getElementById("fromExercise").value;
-
-  const toCategory =
-    document.getElementById("toCategory").value;
-
-  const toExercise =
-    document.getElementById("toExercise").value;
-
-
-  const from =
-    exercises[fromCategory][fromExercise];
-
-  const to =
-    exercises[toCategory][toExercise];
-
-
-  let baseValue = 0;
-
-
-  /* ---------- REP EXERCISE ---------- */
-
-  if (from.type === "reps") {
-
-    baseValue =
-      Number(document.getElementById("fromReps").value);
-
-    if (!baseValue || baseValue < 1) {
-
-      alert("Please enter your maximum reps.");
-
-      return;
-
-    }
-
-  }
-
-
-  /* ---------- GYM MACHINE ---------- */
-
-  if (from.type === "weightReps") {
-
-    const reps =
-      Number(document.getElementById("fromReps").value);
-
-    const weight =
-      Number(document.getElementById("fromWeight").value);
-
-
-    if (!reps || reps < 1) {
-
-      alert("Please enter the number of reps.");
-
-      return;
-
-    }
-
-
-    if (!weight || weight <= 0) {
-
-      alert("Please enter the weight.");
-
-      return;
-
-    }
-
-
-    /*
-      Simple volume estimate.
-      Weight × reps
-    */
-
-    baseValue =
-      weight * reps;
-
-  }
-
-
-  /* ---------- ISOMETRIC ---------- */
-
-  if (from.type === "time") {
-
-    baseValue =
-      Number(document.getElementById("fromTime").value);
-
-
-    if (!baseValue || baseValue < 1) {
-
-      alert("Please enter your hold time.");
-
-      return;
-
-    }
-
-  }
-
-
-  /* =====================================================
-     CONVERSION
-  ===================================================== */
-
-
-  let estimated;
-
-
-  if (from.type === "time" && to.type === "time") {
-
-    estimated =
-      baseValue *
-      (from.difficulty / to.difficulty);
-
-  }
-
-
-  else if (from.type === "weightReps" && to.type === "weightReps") {
-
-    /*
-      Convert total training volume
-      according to exercise difficulty.
-    */
-
-    estimated =
-      baseValue *
-      (from.difficulty / to.difficulty);
-
-    showWeightResult(estimated);
-
-    return;
-
-  }
-
-
-  else {
-
-    estimated =
-      baseValue *
-      (from.difficulty / to.difficulty);
-
-  }
-
-
-  /* =====================================================
-     RESULT RANGE
-  ===================================================== */
-
-
-  let lower =
-    Math.max(
-      1,
-      Math.round(estimated * 0.75)
-    );
-
-
-  let upper =
-    Math.max(
-      lower + 1,
-      Math.round(estimated * 1.25)
-    );
-
-
-  upper =
-    Math.min(
-      upper,
-      300
-    );
-
-
-  const middle =
-    Math.round(
-      (lower + upper) / 2
-    );
-
-
-  document.getElementById("answer")
-    .textContent =
-    middle + getResultUnit(to.type);
-
-
-  document.getElementById("range")
-    .textContent =
-    "Estimated range: " +
-    lower +
-    "–" +
-    upper +
-    getResultUnit(to.type);
-
-
-  document.getElementById("result")
-    .style.display =
-    "block";
-
-}
-
-
-/* =====================================================
-   RESULT UNIT
-===================================================== */
-
-
-function getResultUnit(type) {
-
-  if (type === "time") {
-
-    return " seconds";
-
-  }
-
-  return " reps";
-
-}
-
-
-/* =====================================================
-   GYM MACHINE RESULT
-===================================================== */
-
-
-function showWeightResult(volume) {
-
-  const toCategory =
-    document.getElementById("toCategory").value;
-
-  const toExercise =
-    document.getElementById("toExercise").value;
-
-  const to =
-    exercises[toCategory][toExercise];
-
-
-  /*
-    Assume a standard target of 10 reps.
-  */
-
-  const targetReps = 10;
-
-
-  let estimatedWeight =
-    volume /
-    targetReps;
-
-
-  estimatedWeight =
-    estimatedWeight *
-    (to.difficulty / 5);
-
-
-  estimatedWeight =
-    Math.max(
-      1,
-      Math.round(estimatedWeight * 2) / 2
-    );
-
-
-  const lower =
-    Math.max(
-      1,
-      Math.round(estimatedWeight * 0.75 * 2) / 2
-    );
-
-
-  const upper =
-    Math.round(
-      estimatedWeight * 1.25 * 2
-    ) / 2;
-
-
-  document.getElementById("answer")
-    .textContent =
-    estimatedWeight + " kg × " +
-    targetReps + " reps";
-
-
-  document.getElementById("range")
-    .textContent =
-    "Estimated weight range: " +
-    lower + "–" +
-    upper +
-    " kg at about " +
-    targetReps +
-    " reps";
-
-
-  document.getElementById("result")
-    .style.display =
-    "block";
-
-}
-
-
-/* =====================================================
-   STARTUP
-===================================================== */
-
-
-updateFromExercises();
-
-updateToExercises();
-
-</script>
+  </script>
 
 </body>
 </html>
